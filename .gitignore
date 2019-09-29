@@ -1,3 +1,6 @@
 .vscode/
 models/
 output/
+GAN2/__pycache__
+GAN2/checkpoint
+GAN2/samples
