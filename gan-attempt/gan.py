@@ -1,16 +1,16 @@
 import numpy as np, matplotlib.pyplot as plt
 
 # Change keras backend
-import os ; os.environ["KERAS_BACKEND"] = "theano"#"plaidml.keras.backend" #"tensorflow"
+import os ; os.environ["KERAS_BACKEND"] = "theano"#"plaidml.keras.backend" #"theano"
 
 from keras import Sequential, Model, Input
 from keras.layers import Dense, LeakyReLU, Dropout
 from keras.optimizers import Adam
 from keras.models import load_model
 
-def main(epochs=50, batch_size=128):
-    skin_dataset = np.load('../dataset/data.npy') # (5578, 16384)
-    
+def main(epochs=500, batch_size=64):
+    skin_dataset = np.load('../dataset/data.npy') # (5594, 16384)
+    print(skin_dataset.shape)
     if False: # Load models
         generator = load_model('output/generator_final.h5')
         discriminator= load_model('output/discriminator_final.h5')
@@ -55,19 +55,19 @@ def adam_optimizer():
 
 def create_generator():
     g = Sequential(name='generator')
-    g.add(Dense(256, input_dim=100)) ; g.add(LeakyReLU(0.2))
-    g.add(Dense(512))                ; g.add(LeakyReLU(0.2))
+    g.add(Dense(128, input_dim=100)) ; g.add(LeakyReLU(0.2))
+    g.add(Dense(256))                ; g.add(LeakyReLU(0.2))
+    g.add(Dense(512))               ; g.add(LeakyReLU(0.2))
     g.add(Dense(1024))               ; g.add(LeakyReLU(0.2))
-    g.add(Dense(2048))               ; g.add(LeakyReLU(0.2))
     g.add(Dense(64*64*4,              activation='tanh'))
     g.compile(optimizer=adam_optimizer(), loss='binary_crossentropy')
     return g
 def create_discriminator():
     d = Sequential(name='discriminator')
-    d.add(Dense(2048, input_dim=64*64*4)) ; d.add(LeakyReLU(0.2)) ; d.add(Dropout(0.3))
-    d.add(Dense(1024))                    ; d.add(LeakyReLU(0.2)) ; d.add(Dropout(0.3))
-    d.add(Dense(512))                     ; d.add(LeakyReLU(0.2)) ; d.add(Dropout(0.3))
-    d.add(Dense(256))                     ; d.add(LeakyReLU(0.2))
+    d.add(Dense(1024, input_dim=64*64*4)) ; d.add(LeakyReLU(0.2)) ; d.add(Dropout(0.3))
+    d.add(Dense(512))                    ; d.add(LeakyReLU(0.2)) ; d.add(Dropout(0.3))
+    d.add(Dense(256))                     ; d.add(LeakyReLU(0.2)) ; d.add(Dropout(0.3))
+    d.add(Dense(128))                     ; d.add(LeakyReLU(0.2))
     d.add(Dense(1,                         activation='sigmoid'))
     d.compile(optimizer=adam_optimizer(), loss='binary_crossentropy')
     return d
